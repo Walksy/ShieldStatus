@@ -8,7 +8,7 @@ public class CommandManager {
     public void initCommand()
     {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
-            dispatcher.register(net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal("interpolateshields")
+            dispatcher.register(net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal("shieldinterpolation")
                 .executes(context -> {
                     ConfigManager.INSTANCE.interpolateShields = !ConfigManager.INSTANCE.interpolateShields;
                     String message = ConfigManager.INSTANCE.interpolateShields ? "enabled" : "disabled";
