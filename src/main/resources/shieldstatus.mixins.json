@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "walksy.shieldstatus.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+    "BuiltinModelItemRendererMixin",
+    "LivingEntityMixin",
+    "ClientPlayerEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
