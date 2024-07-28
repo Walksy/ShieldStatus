@@ -1,6 +1,12 @@
 package walksy.shieldstatus.mixin;
 
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.block.entity.BannerBlockEntity;
+import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
@@ -11,14 +17,14 @@ import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.ShieldItem;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,6 +34,7 @@ import walksy.shieldstatus.manager.ConfigManager;
 import walksy.shieldstatus.manager.ShieldDataManager;
 
 import java.awt.*;
+import java.util.List;
 import java.util.Objects;
 
 @Mixin(BuiltinModelItemRenderer.class)
@@ -52,22 +59,31 @@ public class BuiltinModelItemRendererMixin {
                 .anyMatch(playerStats -> playerStats.player.getUuid().equals(targetLivingEntity.getUuid()));
             final Color shieldColor = this.getColor(targetLivingEntity, isShieldDisabled);
 
-            BannerPatternsComponent bannerPatternsComponent = stack.getOrDefault(DataComponentTypes.BANNER_PATTERNS, BannerPatternsComponent.DEFAULT);
-            DyeColor dyeColor2 = stack.get(DataComponentTypes.BASE_COLOR);
-            boolean bl = !bannerPatternsComponent.layers().isEmpty() || dyeColor2 != null;
+            boolean bl = BlockItem.getBlockEntityNbt(stack) != null;
             matrices.push();
             matrices.scale(1.0F, -1.0F, -1.0F);
             SpriteIdentifier spriteIdentifier = bl ? ModelLoader.SHIELD_BASE : ModelLoader.SHIELD_BASE_NO_PATTERN;
             VertexConsumer vertexConsumer = spriteIdentifier.getSprite().getTextureSpecificVertexConsumer(ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, this.modelShield.getLayer(spriteIdentifier.getAtlasId()), true, stack.hasGlint()));
-            this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, new Color(shieldColor.getRed() / 255.0F, shieldColor.getGreen() / 255.0F, shieldColor.getBlue() / 255.0F, 1.0F).getRGB());
+            this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, shieldColor.getRed() / 255.0F, shieldColor.getGreen() / 255.0F, shieldColor.getBlue() / 255.0F, 1.0F);
             if (bl) {
-                BannerBlockEntityRenderer.renderCanvas(matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, (DyeColor) Objects.requireNonNullElse(dyeColor2, DyeColor.WHITE), bannerPatternsComponent, stack.hasGlint());
+                List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListNbt(stack));
+                this.renderBannerBlockEntityCanvas(matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, list, stack.hasGlint(), shieldColor.getRed() / 255.0F, shieldColor.getGreen() / 255.0F, shieldColor.getBlue() / 255.0F);
             } else {
-                this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay, new Color(shieldColor.getRed() / 255.0F, shieldColor.getGreen() / 255.0F, shieldColor.getBlue() / 255.0F, 1.0F).getRGB());
+                this.modelShield.getPlate().render(matrices, vertexConsumer, light, overlay, shieldColor.getRed() / 255.0F, shieldColor.getGreen() / 255.0F, shieldColor.getBlue() / 255.0F, 1.0F);
             }
             matrices.pop();
         }
     }
+    
+    private void renderBannerBlockEntityCanvas(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, ModelPart canvas, SpriteIdentifier baseSprite, boolean isBanner, List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns, boolean glint, float red, float green, float blue) {
+        canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay, red, green, blue, 1.0f);
+        for (int i = 0; i < 17 && i < patterns.size(); ++i) {
+            Pair<RegistryEntry<BannerPattern>, DyeColor> pair = patterns.get(i);
+            float[] fs = pair.getSecond().getColorComponents();
+            pair.getFirst().getKey().map(key -> isBanner ? TexturedRenderLayers.getBannerPatternTextureId(key) : TexturedRenderLayers.getShieldPatternTextureId(key)).ifPresent(sprite -> canvas.render(matrices, sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0f));
+        }
+    }
+
 
     private Color getColor(LivingEntity livingEntity, boolean isShieldDisabled) {
         Color disabledColor = Color.RED;
