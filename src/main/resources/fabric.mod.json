@@ -5,8 +5,7 @@
 	"name": "Shield Status",
 	"description": "Shows shield states, represented by color. This mod was ported forward and improved on by Walksy.",
 	"authors": [
-		"Walksy",
-    "reiop / hinoob"
+		"Walksy"
 	],
 	"contact": {
     "issues": "https://github.com/Walksy/ShieldStatus/issues",

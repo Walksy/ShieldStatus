@@ -61,6 +61,13 @@ public class ClothConfigIntegration {
                 ConfigManager.enabledBlue = newValue;
             })
             .build());
+        enabledShieldSub.add(entryBuilder.startIntSlider(Text.literal("Enabled Opacity"), ConfigManager.enabledOpacity, 0, 255)
+            .setDefaultValue(ConfigManager.enabledOpacity)
+            .setTooltip(Text.literal(""))
+            .setSaveConsumer(newValue -> {
+                ConfigManager.enabledOpacity = newValue;
+            })
+            .build());
         colorCategory.addEntry(enabledShieldSub.setExpanded(true).build());
 
         SubCategoryBuilder disabledShieldSub = entryBuilder.startSubCategory(Text.literal("Disabled Shield Color"));
@@ -83,6 +90,13 @@ public class ClothConfigIntegration {
             .setTooltip(Text.literal(""))
             .setSaveConsumer(newValue -> {
                 ConfigManager.disabledBlue = newValue;
+            })
+            .build());
+        disabledShieldSub.add(entryBuilder.startIntSlider(Text.literal("Disabled Opacity"), ConfigManager.disabledOpacity, 0, 255)
+            .setDefaultValue(ConfigManager.disabledOpacity)
+            .setTooltip(Text.literal(""))
+            .setSaveConsumer(newValue -> {
+                ConfigManager.disabledOpacity = newValue;
             })
             .build());
         colorCategory.addEntry(disabledShieldSub.setExpanded(true).build());

@@ -6,15 +6,18 @@ This mod renders color overlays on player's shields to determine whether that sh
 ### Information:
 **Colors**
 
-This mod allows you to customize and choose the shield's disabled and enabled color via the mod's config screen. You must have mod menu to access this.
+This mod will show two/three colors to represent the shield's status:
 
-**Config**
+- Red: Disabled.
+- Orange: Disabled, but almost re-enabled.
+- Green: Enabled.
 
-![General Config](https://cdn.modrinth.com/data/cached_images/27c8160361b36f4ca0eb910e18582a2b89f38bf4.png)
+**Commands**
 
-![Color Config](https://cdn.modrinth.com/data/cached_images/957ddaeb5052aa8f33fa684b6263f18ba6186bc5.png)
+- /shieldinterpolate
 
-The interpolation option gives you the choice to set the shield to either display two static colors or to have the disabled color gradually transition to the enabled color. This way, you can estimate when the shield will be reactivated. 
+This command gives you the option to set the shield to either display static red and green colors or to have the red color gradually transition to green. This way, you can estimate when the shield will be reactivated.
+
 
 **Compatibility & Improvements**
 
@@ -25,7 +28,7 @@ This version of shield statuses fixes a bug from the original mod, where the shi
 ---
 **Credits**
 
-- Mod: Walksy
+- Mod: Walksy, reiop / hinoob
 - Icon: SakuraFX
 
 
