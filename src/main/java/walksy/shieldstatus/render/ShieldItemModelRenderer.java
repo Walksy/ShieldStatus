@@ -1,6 +1,5 @@
 package walksy.shieldstatus.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -8,17 +7,14 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
-import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -27,14 +23,12 @@ import walksy.shieldstatus.GrayscaleTextureCache;
 import walksy.shieldstatus.ShieldStatus;
 import walksy.shieldstatus.config.Config;
 
-import java.awt.*;
 import java.util.Objects;
 
 public class ShieldItemModelRenderer {
 
-
-    public void render(@Nullable ComponentMap componentMap, ShieldEntityModel model, ModelTransformationMode modelTransformationMode, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, boolean bl) {
-        if (modelTransformationMode.isFirstPerson() || modelTransformationMode == ModelTransformationMode.GUI || ShieldStatus.focusedEntity == null) {
+    public void render(@Nullable ComponentMap componentMap, ShieldEntityModel model, ItemDisplayContext modelTransformationMode, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j, boolean bl) {
+        if (modelTransformationMode.isFirstPerson() || modelTransformationMode == ItemDisplayContext.GUI || ShieldStatus.focusedEntity == null) {
             ShieldStatus.focusedEntity = MinecraftClient.getInstance().player;
         }
 

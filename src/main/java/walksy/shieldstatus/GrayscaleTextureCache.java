@@ -71,10 +71,9 @@ public class GrayscaleTextureCache {
         }
 
         Identifier newId = Identifier.of(original.getNamespace(), "grayscale/" + original.getPath());
-        textureManager.registerTexture(newId, new NativeImageBackedTexture(grayscale));
+        textureManager.registerTexture(newId, new NativeImageBackedTexture(newId::toString, grayscale));
 
         return newId;
     }
-
 }
 
