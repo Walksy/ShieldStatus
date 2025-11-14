@@ -1,0 +1,5 @@
+accessWidener	v1	named
+accessible class  net/minecraft/client/gui/render/GuiRenderer$RenderedItem
+accessible method net/minecraft/client/gui/render/GuiRenderer$RenderedItem <init> (IIFFI)V
+accessible field  net/minecraft/client/gui/render/GuiRenderer$RenderedItem frame I
+
