@@ -1,6 +1,5 @@
 package walksy.shieldstatus.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -8,11 +7,8 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
@@ -27,7 +23,6 @@ import walksy.shieldstatus.GrayscaleTextureCache;
 import walksy.shieldstatus.ShieldStatus;
 import walksy.shieldstatus.config.Config;
 
-import java.awt.*;
 import java.util.Objects;
 
 public class ShieldItemModelRenderer {
@@ -50,7 +45,7 @@ public class ShieldItemModelRenderer {
         matrixStack.push();
         matrixStack.scale(1.0F, -1.0F, -1.0F);
 
-        Identifier texture = ShieldStatus.getShieldStateManager().isCoolingDown(ShieldStatus.focusedEntity) ? Config.disabledTexture.getIdentifier() : Config.enabledTexture.getIdentifier();
+        Identifier texture = Config.getTexture(ShieldStatus.focusedEntity);
         if (Config.grayscaleTexture) {
             texture = GrayscaleTextureCache.get(texture);
         }

@@ -5,7 +5,6 @@ import net.minecraft.client.render.entity.model.ShieldEntityModel;
 import net.minecraft.client.render.item.model.special.ShieldModelRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ModelTransformationMode;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

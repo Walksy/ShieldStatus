@@ -11,7 +11,7 @@ import walksy.shieldstatus.config.Config;
 @Mixin(ClientPlayerEntity.class)
 public class PlayerEntityMixin {
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/AbstractClientPlayerEntity;tick()V", shift = At.Shift.AFTER))
     public void onTick(CallbackInfo ci) {
         if (!Config.modEnabled) return;
         ShieldStatus.getShieldStateManager().update();

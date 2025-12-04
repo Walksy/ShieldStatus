@@ -13,21 +13,18 @@ import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
 import main.walksy.lib.core.utils.IdentifierWrapper;
 import main.walksy.lib.core.utils.PathUtils;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import walksy.shieldstatus.ShieldStatus;
+import walksy.shieldstatus.manager.ShieldStateManager;
 
 public class Config implements WalksyLibConfig {
 
-    //TODO Make dependent on modenabled
     public static boolean modEnabled = true;
     public static boolean colorInterpolation = false;
     public static boolean grayscaleTexture = false;
+    public static boolean selfStateOnly = false;
     public static boolean customEnabledShieldColor = true;
     public static boolean customUsingShieldColor = false;
     public static boolean customDisabledShieldColor = true;
@@ -41,11 +38,14 @@ public class Config implements WalksyLibConfig {
 
     public static WalksyLibColor getColor(@Nullable PlayerEntity player) {
         WalksyLibColor DEFAULT = new WalksyLibColor(255, 255, 255, 255);
-        if (player == null) {
-            //return DEFAULT;
+        if (player == null) return DEFAULT;
+        if (player != MinecraftClient.getInstance().player && selfStateOnly) {
+            return DEFAULT;
         }
-        boolean cd = ShieldStatus.getShieldStateManager().isCoolingDown(player);
-        boolean active = ShieldStatus.getShieldStateManager().isUsingShield(player);
+
+        ShieldStateManager ssm = ShieldStatus.getShieldStateManager();
+        boolean cd = ssm.isCoolingDown(player);
+        boolean active = ssm.isUsingShield(player);
 
         WalksyLibColor currentEnabledColor = customEnabledShieldColor ? enabledColor : DEFAULT;
         WalksyLibColor currentDisabledColor = customDisabledShieldColor ? disabledColor : DEFAULT;
@@ -57,23 +57,38 @@ public class Config implements WalksyLibConfig {
         if (!colorInterpolation) {
             return cd ? currentDisabledColor : currentEnabledColor;
         }
-        float progress = 0.0f;
-        if (cd) {
-            progress = player.getItemCooldownManager().getCooldownProgress(new ItemStack(Items.SHIELD), 0.0f);
-        }
 
-        int red = (int) (currentEnabledColor.getRed() + (currentDisabledColor.getRed() - currentEnabledColor.getRed()) * progress);
+        float progress = cd ? ssm.getCooldownProgress(player) : 0.0f;
+
+        int red = (int) (currentEnabledColor.getRed()   + (currentDisabledColor.getRed()   - currentEnabledColor.getRed())   * progress);
         int green = (int) (currentEnabledColor.getGreen() + (currentDisabledColor.getGreen() - currentEnabledColor.getGreen()) * progress);
-        int blue = (int) (currentEnabledColor.getBlue() + (currentDisabledColor.getBlue() - currentEnabledColor.getBlue()) * progress);
+        int blue = (int) (currentEnabledColor.getBlue()  + (currentDisabledColor.getBlue()  - currentEnabledColor.getBlue())  * progress);
         int alpha = (int) (currentEnabledColor.getAlpha() + (currentDisabledColor.getAlpha() - currentEnabledColor.getAlpha()) * progress);
 
         return new WalksyLibColor(red, green, blue, alpha);
+    }
+
+
+    public static Identifier getTexture(PlayerEntity player) {
+        if (player != MinecraftClient.getInstance().player && selfStateOnly) {
+            return Config.enabledTexture.getIdentifier();
+        }
+
+        return ShieldStatus.getShieldStateManager().isCoolingDown(player)
+            ? Config.disabledTexture.getIdentifier()
+            : Config.enabledTexture.getIdentifier();
     }
 
     public static void tick() {
         enabledColor.tick();
         disabledColor.tick();
         usingColor.tick();
+
+        if (MinecraftClient.getInstance().world != null && MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().currentScreen == null) {
+            if (ShieldStatus.toggleSelfState.wasPressed()) {
+                selfStateOnly = !selfStateOnly;
+            }
+        }
     }
 
     //General Category
@@ -82,6 +97,10 @@ public class Config implements WalksyLibConfig {
         .build();
 
     //Color Category
+    private final Option<Boolean> selfStateOnlyOption = BooleanOption.createBuilder("Self State Only", () -> selfStateOnly, selfStateOnly, newValue -> selfStateOnly = newValue)
+        .description(OptionDescription.ofOrderedString(() -> "Shows shield states for the client player only, ignores other players"))
+        .availability(() -> modEnabled, "Requires 'Mod Enabled' to be enabled")
+        .build();
     private final Option<Boolean> interpolateShieldColorOption = BooleanOption.createBuilder("Interpolate Shield Color", () -> colorInterpolation, colorInterpolation, newValue -> colorInterpolation = newValue)
         .description(OptionDescription.ofOrderedString(() -> "Transitions the shield color based on the player's disabled and enabled state. Ignores 'use' state"))
         .availability(() -> modEnabled, "Requires 'Mod Enabled' to be enabled")
@@ -124,6 +143,7 @@ public class Config implements WalksyLibConfig {
 
     private final Category colorCategory = Category.createBuilder("Color")
         .group(OptionGroup.createBuilder("General Options")
+            .addOption(selfStateOnlyOption)
             .addOption(interpolateShieldColorOption)
             .addOption(grayscaleShieldTextureOption)
             .build())
