@@ -21,6 +21,8 @@ import walksy.shieldstatus.manager.ShieldStateManager;
 
 public class Config implements WalksyLibConfig {
 
+    private static final Identifier SHIELD_TEXTURE = Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png");
+
     public static boolean modEnabled = true;
     public static boolean colorInterpolation = false;
     public static boolean grayscaleTexture = false;
@@ -33,8 +35,8 @@ public class Config implements WalksyLibConfig {
     private static WalksyLibColor usingColor = new WalksyLibColor(0, 255, 0, 255);
     private static WalksyLibColor disabledColor = new WalksyLibColor(255, 0, 0, 255);
 
-    public static IdentifierWrapper enabledTexture = new IdentifierWrapper(Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png"));
-    public static IdentifierWrapper disabledTexture = new IdentifierWrapper(Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png"));
+    public static IdentifierWrapper enabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
+    public static IdentifierWrapper disabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
 
     public static WalksyLibColor getColor(@Nullable Player player) {
         WalksyLibColor DEFAULT = new WalksyLibColor(255, 255, 255, 255);
@@ -70,6 +72,11 @@ public class Config implements WalksyLibConfig {
 
 
     public static Identifier getTexture(Player player) {
+        if (pre26_1TexturePath()) {
+            enabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
+            disabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
+        }
+
         if (player != Minecraft.getInstance().player && selfStateOnly) {
             return Config.enabledTexture.getIdentifier();
         }
@@ -89,6 +96,12 @@ public class Config implements WalksyLibConfig {
                 selfStateOnly = !selfStateOnly;
             }
         }
+    }
+
+    private static boolean pre26_1TexturePath() {
+        final String pre26_1Path = "textures/entity/shield_base_nopattern.png";
+        return (enabledTexture != null && pre26_1Path.equals(enabledTexture.getIdentifier().getPath())) ||
+                (disabledTexture != null && pre26_1Path.equals(disabledTexture.getIdentifier().getPath()));
     }
 
     //General Category
