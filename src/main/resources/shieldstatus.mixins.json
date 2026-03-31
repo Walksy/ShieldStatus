@@ -3,13 +3,15 @@
 	"package": "walksy.shieldstatus.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"client": [
-    "ShieldModelRendererMixin",
-    "PlayerHeldItemFeatureRendererMixin",
-    "LivingEntityMixin",
-    "PlayerEntityMixin",
-    "ClientPlayerInteractionManagerMixin",
-    "ClientPlayNetworkHandlerMixin",
-    "MinecraftClientMixin"
+		"LayerRenderStateMixin",
+		"PlayerItemInHandLayerMixin",
+		"LivingEntityMixin",
+		"PlayerEntityMixin",
+		"MultiPlayerGameModeMixin",
+		"ClientPacketListenerMixin",
+		"GuiRendererMixin",
+		"MinecraftClientMixin",
+		"ShieldSpecialRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

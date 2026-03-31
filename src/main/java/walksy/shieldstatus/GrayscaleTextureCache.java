@@ -1,12 +1,13 @@
 package walksy.shieldstatus;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
+
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,16 +23,16 @@ public class GrayscaleTextureCache {
     }
 
     private static Identifier convert(Identifier original) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         TextureManager textureManager = client.getTextureManager();
 
         NativeImage originalImage = null;
 
         AbstractTexture texture = textureManager.getTexture(original);
-        if (texture instanceof NativeImageBackedTexture nativeTex) {
+        if (texture instanceof DynamicTexture nativeTex) {
             try {
-                NativeImage copy = new NativeImage(nativeTex.getImage().getWidth(), nativeTex.getImage().getHeight(), false);
-                copy.copyFrom(nativeTex.getImage());
+                NativeImage copy = new NativeImage(nativeTex.getPixels().getWidth(), nativeTex.getPixels().getHeight(), false);
+                copy.copyFrom(nativeTex.getPixels());
                 originalImage = copy;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -42,7 +43,7 @@ public class GrayscaleTextureCache {
             try {
                 Optional<Resource> optRes = client.getResourceManager().getResource(original);
                 if (optRes.isPresent()) {
-                    try (InputStream in = optRes.get().getInputStream()) {
+                    try (InputStream in = optRes.get().open()) {
                         originalImage = NativeImage.read(in);
                     }
                 }
@@ -58,7 +59,7 @@ public class GrayscaleTextureCache {
         NativeImage grayscale = new NativeImage(originalImage.getWidth(), originalImage.getHeight(), false);
         for (int y = 0; y < grayscale.getHeight(); y++) {
             for (int x = 0; x < grayscale.getWidth(); x++) {
-                int rgba = originalImage.getColorArgb(x, y);
+                int rgba = originalImage.getPixel(x, y);
 
                 int a = (rgba >> 24) & 0xFF;
                 int r = (rgba >> 16) & 0xFF;
@@ -66,12 +67,12 @@ public class GrayscaleTextureCache {
                 int b = rgba & 0xFF;
 
                 int gray = (int) (r * 0.299f + g * 0.587f + b * 0.114f);
-                grayscale.setColorArgb(x, y, (a << 24) | (gray << 16) | (gray << 8) | gray);
+                grayscale.setPixel(x, y, (a << 24) | (gray << 16) | (gray << 8) | gray);
             }
         }
 
-        Identifier newId = Identifier.of(original.getNamespace(), "grayscale/" + original.getPath());
-        textureManager.registerTexture(newId, new NativeImageBackedTexture(grayscale));
+        Identifier newId = Identifier.fromNamespaceAndPath(original.getNamespace(), "grayscale/" + original.getPath());
+        textureManager.register(newId, new DynamicTexture(newId::toString, grayscale));
 
         return newId;
     }

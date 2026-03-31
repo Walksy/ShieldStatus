@@ -1,6 +1,6 @@
 package walksy.shieldstatus.manager;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -11,12 +11,12 @@ public class ShieldCooldownManager {
 
     private final Map<UUID, ShieldCooldown> cooldowns = new ConcurrentHashMap<>();
 
-    public void setCooldown(PlayerEntity player) {
-        setCooldown(player.getUuid(), 100);
+    public void setCooldown(Player player) {
+        setCooldown(player.getUUID(), 100);
     }
 
-    public void setCooldown(PlayerEntity player, int ticks) {
-        setCooldown(player.getUuid(), ticks);
+    public void setCooldown(Player player, int ticks) {
+        setCooldown(player.getUUID(), ticks);
     }
 
     public void setCooldown(UUID playerUuid) {
@@ -28,9 +28,9 @@ public class ShieldCooldownManager {
         cooldowns.put(playerUuid, new ShieldCooldown(Math.max(0, ticks)));
     }
 
-    public boolean isCoolingDown(PlayerEntity player) {
+    public boolean isCoolingDown(Player player) {
         if (player == null) return false;
-        return isCoolingDown(player.getUuid());
+        return isCoolingDown(player.getUUID());
     }
 
     public boolean isCoolingDown(UUID playerUuid) {
@@ -39,9 +39,9 @@ public class ShieldCooldownManager {
         return cd != null && cd.getTicks() > 0;
     }
 
-    public int getRemainingTicks(PlayerEntity player) {
+    public int getRemainingTicks(Player player) {
         if (player == null) return 0;
-        return getRemainingTicks(player.getUuid());
+        return getRemainingTicks(player.getUUID());
     }
 
     public int getRemainingTicks(UUID playerUuid) {
@@ -50,9 +50,9 @@ public class ShieldCooldownManager {
         return cd == null ? 0 : Math.max(0, cd.getTicks());
     }
 
-    public void remove(PlayerEntity player) {
+    public void remove(Player player) {
         if (player == null) return;
-        remove(player.getUuid());
+        remove(player.getUUID());
     }
 
     public void remove(UUID playerUuid) {

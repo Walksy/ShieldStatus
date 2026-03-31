@@ -12,9 +12,9 @@ import main.walksy.lib.core.config.local.options.groups.OptionGroup;
 import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
 import main.walksy.lib.core.utils.IdentifierWrapper;
 import main.walksy.lib.core.utils.PathUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import walksy.shieldstatus.ShieldStatus;
 import walksy.shieldstatus.manager.ShieldStateManager;
@@ -33,13 +33,13 @@ public class Config implements WalksyLibConfig {
     private static WalksyLibColor usingColor = new WalksyLibColor(0, 255, 0, 255);
     private static WalksyLibColor disabledColor = new WalksyLibColor(255, 0, 0, 255);
 
-    public static IdentifierWrapper enabledTexture = new IdentifierWrapper(Identifier.ofVanilla("textures/entity/shield_base_nopattern.png"));
-    public static IdentifierWrapper disabledTexture = new IdentifierWrapper(Identifier.ofVanilla("textures/entity/shield_base_nopattern.png"));
+    public static IdentifierWrapper enabledTexture = new IdentifierWrapper(Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png"));
+    public static IdentifierWrapper disabledTexture = new IdentifierWrapper(Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png"));
 
-    public static WalksyLibColor getColor(@Nullable PlayerEntity player) {
+    public static WalksyLibColor getColor(@Nullable Player player) {
         WalksyLibColor DEFAULT = new WalksyLibColor(255, 255, 255, 255);
         if (player == null) return DEFAULT;
-        if (player != MinecraftClient.getInstance().player && selfStateOnly) {
+        if (player != Minecraft.getInstance().player && selfStateOnly) {
             return DEFAULT;
         }
 
@@ -69,8 +69,8 @@ public class Config implements WalksyLibConfig {
     }
 
 
-    public static Identifier getTexture(PlayerEntity player) {
-        if (player != MinecraftClient.getInstance().player && selfStateOnly) {
+    public static Identifier getTexture(Player player) {
+        if (player != Minecraft.getInstance().player && selfStateOnly) {
             return Config.enabledTexture.getIdentifier();
         }
 
@@ -84,8 +84,8 @@ public class Config implements WalksyLibConfig {
         disabledColor.tick();
         usingColor.tick();
 
-        if (MinecraftClient.getInstance().world != null && MinecraftClient.getInstance().player != null && MinecraftClient.getInstance().currentScreen == null) {
-            if (ShieldStatus.toggleSelfState.wasPressed()) {
+        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null) {
+            if (ShieldStatus.toggleSelfState.consumeClick()) {
                 selfStateOnly = !selfStateOnly;
             }
         }
