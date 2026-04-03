@@ -8,12 +8,10 @@ import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
-import walksy.shieldstatus.manager.ShieldStateManager;
 import walksy.shieldstatus.render.ShieldModelSubmitter;
 
 public class ShieldStatus implements ModInitializer {
 
-    private static ShieldStateManager shieldCooldownManager;
     private static ShieldModelSubmitter shieldModelSubmitter;
     public static Player focusedEntity = null;
 
@@ -22,7 +20,7 @@ public class ShieldStatus implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        shieldCooldownManager = new ShieldStateManager();
+
     }
 
     public static void setupShieldModelSubmitter(ShieldModel model, SpriteGetter sprites) {
@@ -32,9 +30,4 @@ public class ShieldStatus implements ModInitializer {
     public static ShieldModelSubmitter getShieldModelSubmitter() {
         return shieldModelSubmitter;
     }
-
-    public static ShieldStateManager getShieldStateManager() {
-        return shieldCooldownManager;
-    }
-
 }

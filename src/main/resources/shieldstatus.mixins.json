@@ -5,13 +5,9 @@
 	"client": [
 		"LayerRenderStateMixin",
 		"PlayerItemInHandLayerMixin",
-		"LivingEntityMixin",
-		"PlayerEntityMixin",
-		"MultiPlayerGameModeMixin",
-		"ClientPacketListenerMixin",
 		"GuiRendererMixin",
-		"MinecraftClientMixin",
-		"ShieldSpecialRendererMixin"
+		"ShieldSpecialRendererMixin",
+		"MinecraftMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

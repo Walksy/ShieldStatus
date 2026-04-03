@@ -16,6 +16,7 @@ import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
@@ -38,19 +39,20 @@ public class ShieldModelSubmitter {
         if (context.firstPerson() || context == ItemDisplayContext.GUI || ShieldStatus.focusedEntity == null) {
             ShieldStatus.focusedEntity = Minecraft.getInstance().player;
         }
-        final Identifier shieldTexture = Config.getTexture(ShieldStatus.focusedEntity);
+        final Player user = ShieldStatus.focusedEntity;
+        final Identifier shieldTexture = Config.getTexture(user);
         final Identifier shieldSheet = Config.grayscaleTexture ? GrayscaleTextureCache.get(shieldTexture) : shieldTexture;
 
         submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(shieldSheet), (pose, vertexConsumer) -> {
-            this.submitShieldModel(pose, components, shieldSheet, lightCoords, overlayCoords, hasFoil);
+            this.submitShieldModel(pose, user, components, shieldSheet, lightCoords, overlayCoords, hasFoil);
         });
     }
 
-    private void submitShieldModel(PoseStack.Pose pose, DataComponentMap components, Identifier shieldSheet, int lightCoords, int overlayCoords, boolean hasFoil) {
+    private void submitShieldModel(PoseStack.Pose pose, Player user, DataComponentMap components, Identifier shieldSheet, int lightCoords, int overlayCoords, boolean hasFoil) {
         PoseStack poseStack = new PoseStack();
         poseStack.last().set(pose);
         poseStack.pushPose();
-        final WalksyLibColor tintedColor = Config.getColor(ShieldStatus.focusedEntity);
+        final WalksyLibColor tintedColor = Config.getColor(user);
         final BannerPatternLayers patterns = components != null ? (BannerPatternLayers) components.getOrDefault(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY) : BannerPatternLayers.EMPTY;
         final DyeColor baseColor = components != null ? (DyeColor) components.get(DataComponents.BASE_COLOR) : null;
         final boolean hasPatterns = !patterns.layers().isEmpty() || baseColor != null;
@@ -63,8 +65,8 @@ public class ShieldModelSubmitter {
         if (hasPatterns) {
             submitPatterns(poseStack, bufferSource, lightCoords, overlayCoords, baseColor, patterns);
         }
-        bufferSource.endBatch();
         poseStack.popPose();
+        bufferSource.endBatch();
     }
 
     public void submitPatterns(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, int lightCoords, int overlayCoords, DyeColor baseColor, BannerPatternLayers patterns) {

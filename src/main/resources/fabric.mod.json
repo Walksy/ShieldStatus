@@ -5,32 +5,32 @@
 	"name": "Shield Status",
 	"description": "Represents shield states using colors & textures",
 	"authors": [
-    "Walksy"
+		"Walksy"
 	],
 	"contact": {
-    "issues": "https://github.com/Walksy/ShieldStatus/issues",
-    "sources": "https://github.com/Walksy/ShieldStatus",
-    "homepage": "https://discord.com/invite/zeu7uNuBWY"
+		"issues": "https://github.com/Walksy/ShieldStatus/issues",
+		"sources": "https://github.com/Walksy/ShieldStatus",
+		"homepage": "https://discord.com/invite/zeu7uNuBWY"
 	},
 	"license": "MIT",
 	"icon": "assets/walksy/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-      "walksy.shieldstatus.ShieldStatus"
+			"walksy.shieldstatus.ShieldStatus"
 		],
-    "walksylib": [
-      "walksy.shieldstatus.config.WalksyLibIntegration"
-    ]
+		"walksylib": [
+			"walksy.shieldstatus.config.WalksyLibIntegration"
+		]
 	},
 	"mixins": [
-    "shieldstatus.mixins.json"
+		"shieldstatus.mixins.json"
 	],
 	"depends": {
 		"fabricloader": "*",
 		"minecraft": "*",
 		"java": ">=17",
 		"fabric-api": "*",
-    "walksylib": ">=0.9.3"
-  }
+		"walksylib": ">=1.0.4"
+	}
 }

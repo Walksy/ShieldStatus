@@ -8,12 +8,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import walksy.shieldstatus.config.Config;
 
 @Mixin(Minecraft.class)
-public class MinecraftClientMixin {
+public class MinecraftMixin {
 
-    @Inject(method = "tick",
-            at = @At("HEAD"))
-    public void tick(CallbackInfo ci) {
-        if (!Config.modEnabled) return;
+    @Inject(method = "tick", at = @At("HEAD"))
+    public void tick(CallbackInfo callbackInfo) {
         Config.tick();
     }
 }

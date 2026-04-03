@@ -1,6 +1,7 @@
 package walksy.shieldstatus.config;
 
 import main.walksy.lib.api.WalksyLibConfig;
+import main.walksy.lib.core.WalksyLib;
 import main.walksy.lib.core.config.impl.LocalConfig;
 import main.walksy.lib.core.config.local.Category;
 import main.walksy.lib.core.config.local.Option;
@@ -10,6 +11,7 @@ import main.walksy.lib.core.config.local.options.ColorOption;
 import main.walksy.lib.core.config.local.options.SpriteOption;
 import main.walksy.lib.core.config.local.options.groups.OptionGroup;
 import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
+import main.walksy.lib.core.manager.WalksyLibShieldStateManager;
 import main.walksy.lib.core.utils.IdentifierWrapper;
 import main.walksy.lib.core.utils.PathUtils;
 import net.minecraft.client.Minecraft;
@@ -17,7 +19,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import walksy.shieldstatus.ShieldStatus;
-import walksy.shieldstatus.manager.ShieldStateManager;
 
 public class Config implements WalksyLibConfig {
 
@@ -45,7 +46,7 @@ public class Config implements WalksyLibConfig {
             return DEFAULT;
         }
 
-        ShieldStateManager ssm = ShieldStatus.getShieldStateManager();
+        WalksyLibShieldStateManager ssm = WalksyLib.getInstance().getShieldStateManager();
         boolean cd = ssm.isCoolingDown(player);
         boolean active = ssm.isUsingShield(player);
 
@@ -81,16 +82,12 @@ public class Config implements WalksyLibConfig {
             return Config.enabledTexture.getIdentifier();
         }
 
-        return ShieldStatus.getShieldStateManager().isCoolingDown(player)
+        return WalksyLib.getInstance().getShieldStateManager().isCoolingDown(player)
             ? Config.disabledTexture.getIdentifier()
             : Config.enabledTexture.getIdentifier();
     }
 
     public static void tick() {
-        enabledColor.tick();
-        disabledColor.tick();
-        usingColor.tick();
-
         if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null) {
             if (ShieldStatus.toggleSelfState.consumeClick()) {
                 selfStateOnly = !selfStateOnly;
