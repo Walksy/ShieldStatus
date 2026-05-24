@@ -38,7 +38,7 @@ public class ShieldSpecialSubmitter {
     public void submit(final ItemDisplayContext context, final DataComponentMap components, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final int lightCoords, final int overlayCoords, final boolean hasFoil) {
         ShieldStatus.checkDisplayContext(context);
         this.state.extractConfigState();
-        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(this.state.shieldSheet), (pose, vertexConsumer) -> {
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(this.state.shieldSheet), (pose, _) -> {
             this.submitShieldModel(pose, components, lightCoords, overlayCoords, hasFoil);
         });
     }
