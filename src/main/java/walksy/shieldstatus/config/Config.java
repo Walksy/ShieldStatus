@@ -21,9 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import walksy.shieldstatus.ShieldStatus;
 
 public class Config implements WalksyLibConfig {
-
     private static final Identifier SHIELD_TEXTURE = Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png");
-
+    private static final String SHIELD_TEXTURE_PRE_26_1 = "textures/entity/shield_base_nopattern.png";
     public static boolean modEnabled = true;
     public static boolean colorInterpolation = false;
     public static boolean grayscaleTexture = false;
@@ -31,64 +30,58 @@ public class Config implements WalksyLibConfig {
     public static boolean customEnabledShieldColor = true;
     public static boolean customUsingShieldColor = false;
     public static boolean customDisabledShieldColor = true;
-
     private static WalksyLibColor enabledColor = new WalksyLibColor(0, 255, 0, 255);
     private static WalksyLibColor usingColor = new WalksyLibColor(0, 255, 0, 255);
     private static WalksyLibColor disabledColor = new WalksyLibColor(255, 0, 0, 255);
-
     public static IdentifierWrapper enabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
     public static IdentifierWrapper disabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
 
-    public static WalksyLibColor getColor(@Nullable Player player) {
-        WalksyLibColor DEFAULT = new WalksyLibColor(255, 255, 255, 255);
-        if (player == null) return DEFAULT;
-        if (player != Minecraft.getInstance().player && selfStateOnly) {
-            return DEFAULT;
+    public static WalksyLibColor getColor(final @Nullable Player player) {
+        final WalksyLibColor fallback = new WalksyLibColor(255, 255, 255, 255);
+        if (player == null) {
+            return fallback;
         }
-
-        WalksyLibShieldStateManager ssm = WalksyLib.getInstance().getShieldStateManager();
-        boolean cd = ssm.isCoolingDown(player);
-        boolean active = ssm.isUsingShield(player);
-
-        WalksyLibColor currentEnabledColor = customEnabledShieldColor ? enabledColor : DEFAULT;
-        WalksyLibColor currentDisabledColor = customDisabledShieldColor ? disabledColor : DEFAULT;
-        WalksyLibColor currentUseColor = customUsingShieldColor ? usingColor : DEFAULT;
-
+        if (player != Minecraft.getInstance().player && selfStateOnly) {
+            return fallback;
+        }
+        final WalksyLibShieldStateManager stateManager = WalksyLib.getInstance().getShieldStateManager();
+        final boolean cd = stateManager.isCoolingDown(player);
+        final boolean active = stateManager.isUsingShield(player);
+        final WalksyLibColor currentEnabledColor = customEnabledShieldColor ? enabledColor : fallback;
+        final WalksyLibColor currentDisabledColor = customDisabledShieldColor ? disabledColor : fallback;
+        final WalksyLibColor currentUseColor = customUsingShieldColor ? usingColor : fallback;
         if (active && customUsingShieldColor) {
             return currentUseColor;
         }
         if (!colorInterpolation) {
             return cd ? currentDisabledColor : currentEnabledColor;
         }
-
-        float progress = cd ? ssm.getCooldownProgress(player) : 0.0f;
-
-        int red = (int) (currentEnabledColor.getRed()   + (currentDisabledColor.getRed()   - currentEnabledColor.getRed())   * progress);
-        int green = (int) (currentEnabledColor.getGreen() + (currentDisabledColor.getGreen() - currentEnabledColor.getGreen()) * progress);
-        int blue = (int) (currentEnabledColor.getBlue()  + (currentDisabledColor.getBlue()  - currentEnabledColor.getBlue())  * progress);
-        int alpha = (int) (currentEnabledColor.getAlpha() + (currentDisabledColor.getAlpha() - currentEnabledColor.getAlpha()) * progress);
-
+        final float progress = cd ? stateManager.getCooldownProgress(player) : 0.0f;
+        final int red = (int) (currentEnabledColor.getRed() + (currentDisabledColor.getRed() - currentEnabledColor.getRed()) * progress);
+        final int green = (int) (currentEnabledColor.getGreen() + (currentDisabledColor.getGreen() - currentEnabledColor.getGreen()) * progress);
+        final int blue = (int) (currentEnabledColor.getBlue()  + (currentDisabledColor.getBlue() - currentEnabledColor.getBlue()) * progress);
+        final int alpha = (int) (currentEnabledColor.getAlpha() + (currentDisabledColor.getAlpha() - currentEnabledColor.getAlpha()) * progress);
         return new WalksyLibColor(red, green, blue, alpha);
     }
 
 
-    public static Identifier getTexture(Player player) {
+    public static Identifier getTexture(final Player player) {
+        final Minecraft minecraft = Minecraft.getInstance();
         if (pre26_1TexturePath()) {
             enabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
             disabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
         }
-
-        if (player != Minecraft.getInstance().player && selfStateOnly) {
+        if (player != minecraft.player && selfStateOnly) {
             return Config.enabledTexture.getIdentifier();
         }
-
         return WalksyLib.getInstance().getShieldStateManager().isCoolingDown(player)
             ? Config.disabledTexture.getIdentifier()
             : Config.enabledTexture.getIdentifier();
     }
 
     public static void tick() {
-        if (Minecraft.getInstance().level != null && Minecraft.getInstance().player != null && Minecraft.getInstance().screen == null) {
+        final Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.level != null && minecraft.player != null && minecraft.screen == null) {
             if (ShieldStatus.toggleSelfState.consumeClick()) {
                 selfStateOnly = !selfStateOnly;
             }
@@ -96,9 +89,8 @@ public class Config implements WalksyLibConfig {
     }
 
     private static boolean pre26_1TexturePath() {
-        final String pre26_1Path = "textures/entity/shield_base_nopattern.png";
-        return (enabledTexture != null && pre26_1Path.equals(enabledTexture.getIdentifier().getPath())) ||
-                (disabledTexture != null && pre26_1Path.equals(disabledTexture.getIdentifier().getPath()));
+        return (enabledTexture != null && SHIELD_TEXTURE_PRE_26_1.equals(enabledTexture.getIdentifier().getPath())) ||
+                (disabledTexture != null && SHIELD_TEXTURE_PRE_26_1.equals(disabledTexture.getIdentifier().getPath()));
     }
 
     //General Category

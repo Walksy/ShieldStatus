@@ -29,7 +29,7 @@ public class PlayerItemInHandLayerMixin {
         Level level = Minecraft.getInstance().level;
         Entity entity = level.getEntity(state.id);
         if (entity instanceof Player player) {
-            ShieldStatus.focusedEntity = player;
+            ShieldStatus.setCurrentFocusedPlayer(player);
         }
     }
 }

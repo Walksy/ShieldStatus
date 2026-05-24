@@ -12,9 +12,8 @@ import walksy.shieldstatus.ShieldStatus;
 @Mixin(ShieldSpecialRenderer.class)
 public class ShieldSpecialRendererMixin {
 
-    @Inject(method = "<init>",
-            at = @At("HEAD"))
+    @Inject(method = "<init>", at = @At("HEAD"))
     private static void init(SpriteGetter sprites, ShieldModel model, CallbackInfo ci) {
-        ShieldStatus.setupShieldModelSubmitter(model, sprites);
+        ShieldStatus.setupShieldSpecialSubmitter(model, sprites);
     }
 }

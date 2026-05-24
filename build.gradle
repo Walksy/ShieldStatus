@@ -18,6 +18,7 @@ java {
 }
 
 loom {
+    accessWidenerPath = file("src/main/resources/shieldstatus.accesswidener")
 }
 
 repositories {
@@ -38,10 +39,6 @@ repositories {
     maven {
         url = "https://maven.nucleoid.xyz/"
     }
-}
-
-loom {
-    accessWidenerPath = file("src/main/resources/shieldstatus.accesswidener")
 }
 
 dependencies {

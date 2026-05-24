@@ -37,20 +37,10 @@ public abstract class LayerRenderStateMixin {
         if (!Config.modEnabled) return;
 
         if ((Object)this.specialRenderer instanceof ShieldSpecialRenderer) {
-            ItemDisplayContext context = this$0.displayContext;
-            DataComponentMap components = (this.argumentForSpecialRendering instanceof DataComponentMap) ? (DataComponentMap) this.argumentForSpecialRendering : null;
-            boolean hasFoil = this.foilType != ItemStackRenderState.FoilType.NONE;
-            ShieldStatus.getShieldModelSubmitter().submit(
-                    context,
-                    components,
-                    poseStack,
-                    submitNodeCollector,
-                    lightCoords,
-                    overlayCoords,
-                    hasFoil,
-                    outlineColor
-            );
-
+            final ItemDisplayContext context = this$0.displayContext;
+            final DataComponentMap components = (this.argumentForSpecialRendering instanceof DataComponentMap) ? (DataComponentMap) this.argumentForSpecialRendering : null;
+            final boolean hasFoil = this.foilType != ItemStackRenderState.FoilType.NONE;
+            ShieldStatus.getShieldSpecialSubmitter().submit(context, components, poseStack, submitNodeCollector, lightCoords, overlayCoords, hasFoil);
             poseStack.popPose();
             ci.cancel();
         }
