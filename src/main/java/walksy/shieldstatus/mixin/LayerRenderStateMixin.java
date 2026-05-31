@@ -35,7 +35,6 @@ public abstract class LayerRenderStateMixin {
             cancellable = true)
     private void redirectShieldSubmit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor, CallbackInfo ci) {
         if (!Config.modEnabled) return;
-
         if ((Object)this.specialRenderer instanceof ShieldSpecialRenderer) {
             final ItemDisplayContext context = this$0.displayContext;
             final DataComponentMap components = (this.argumentForSpecialRendering instanceof DataComponentMap) ? (DataComponentMap) this.argumentForSpecialRendering : null;

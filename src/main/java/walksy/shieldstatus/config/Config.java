@@ -15,6 +15,7 @@ import main.walksy.lib.core.manager.WalksyLibShieldStateManager;
 import main.walksy.lib.core.utils.IdentifierWrapper;
 import main.walksy.lib.core.utils.PathUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -22,34 +23,41 @@ import walksy.shieldstatus.ShieldStatus;
 
 public class Config implements WalksyLibConfig {
     private static final Identifier SHIELD_TEXTURE = Identifier.withDefaultNamespace("textures/entity/shield/shield_base_nopattern.png");
-    private static final String SHIELD_TEXTURE_PRE_26_1 = "textures/entity/shield_base_nopattern.png";
+    private static final String SHIELD_TEXTURE_PRE_26_1_PATH = "textures/entity/shield_base_nopattern.png";
+    private static final WalksyLibColor COLOR_WHITE = new WalksyLibColor(255, 255, 255, 255);
     public static boolean modEnabled = true;
     public static boolean colorInterpolation = false;
     public static boolean grayscaleTexture = false;
     public static boolean selfStateOnly = false;
     public static boolean customEnabledShieldColor = true;
     public static boolean customUsingShieldColor = false;
+    public static boolean customRisingShieldColor = false;
     public static boolean customDisabledShieldColor = true;
     private static WalksyLibColor enabledColor = new WalksyLibColor(0, 255, 0, 255);
     private static WalksyLibColor usingColor = new WalksyLibColor(0, 255, 0, 255);
+    private static WalksyLibColor risingColor = new WalksyLibColor(255, 255, 0, 255);
     private static WalksyLibColor disabledColor = new WalksyLibColor(255, 0, 0, 255);
     public static IdentifierWrapper enabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
     public static IdentifierWrapper disabledTexture = new IdentifierWrapper(SHIELD_TEXTURE);
 
     public static WalksyLibColor getColor(final @Nullable Player player) {
-        final WalksyLibColor fallback = new WalksyLibColor(255, 255, 255, 255);
         if (player == null) {
-            return fallback;
+            return COLOR_WHITE;
         }
         if (player != Minecraft.getInstance().player && selfStateOnly) {
-            return fallback;
+            return COLOR_WHITE;
         }
         final WalksyLibShieldStateManager stateManager = WalksyLib.getInstance().getShieldStateManager();
         final boolean cd = stateManager.isCoolingDown(player);
         final boolean active = stateManager.isUsingShield(player);
-        final WalksyLibColor currentEnabledColor = customEnabledShieldColor ? enabledColor : fallback;
-        final WalksyLibColor currentDisabledColor = customDisabledShieldColor ? disabledColor : fallback;
-        final WalksyLibColor currentUseColor = customUsingShieldColor ? usingColor : fallback;
+        final boolean rising = isShieldRising(player, stateManager);
+        final WalksyLibColor currentEnabledColor = customEnabledShieldColor ? enabledColor : COLOR_WHITE;
+        final WalksyLibColor currentDisabledColor = customDisabledShieldColor ? disabledColor : COLOR_WHITE;
+        final WalksyLibColor currentUseColor = customUsingShieldColor ? usingColor : COLOR_WHITE;
+        final WalksyLibColor currentRisingColor = customRisingShieldColor ? risingColor : COLOR_WHITE;
+        if (rising && customRisingShieldColor) {
+            return currentRisingColor;
+        }
         if (active && customUsingShieldColor) {
             return currentUseColor;
         }
@@ -64,6 +72,10 @@ public class Config implements WalksyLibConfig {
         return new WalksyLibColor(red, green, blue, alpha);
     }
 
+    private static boolean isShieldRising(final Player player, final WalksyLibShieldStateManager stateManager) {
+        final boolean active = stateManager.isUsingShield(player);
+        return stateManager.isHoldingUsableShield(player) && player.isUsingItem() && !active && !stateManager.isCoolingDown(player);
+    }
 
     public static Identifier getTexture(final Player player) {
         final Minecraft minecraft = Minecraft.getInstance();
@@ -89,8 +101,8 @@ public class Config implements WalksyLibConfig {
     }
 
     private static boolean pre26_1TexturePath() {
-        return (enabledTexture != null && SHIELD_TEXTURE_PRE_26_1.equals(enabledTexture.getIdentifier().getPath())) ||
-                (disabledTexture != null && SHIELD_TEXTURE_PRE_26_1.equals(disabledTexture.getIdentifier().getPath()));
+        return (enabledTexture != null && SHIELD_TEXTURE_PRE_26_1_PATH.equals(enabledTexture.getIdentifier().getPath())) ||
+                (disabledTexture != null && SHIELD_TEXTURE_PRE_26_1_PATH.equals(disabledTexture.getIdentifier().getPath()));
     }
 
     //General Category
@@ -120,13 +132,21 @@ public class Config implements WalksyLibConfig {
         .description(OptionDescription.ofOrderedString(() -> "Color of the shield when enabled"))
         .availability(() -> customEnabledShieldColor && modEnabled, "Requires 'Custom Enabled Shield Color & Mod Enabled' to be enabled")
         .build();
-    private final Option<Boolean> customUsingColorOption = BooleanOption.createBuilder("Custom Using Shield Color", () -> customUsingShieldColor, customUsingShieldColor, newValue -> customUsingShieldColor = newValue)
+    private final Option<Boolean> customUsingColorOption = BooleanOption.createBuilder("Custom Active Shield Color", () -> customUsingShieldColor, customUsingShieldColor, newValue -> customUsingShieldColor = newValue)
         .description(OptionDescription.ofOrderedString(() -> "Allows customization of the shield color while in use"))
         .availability(() -> modEnabled, "Requires 'Mod Enabled' to be enabled")
         .build();
-    private final Option<WalksyLibColor> usingColorOption = ColorOption.createBuilder("Using Color", () -> usingColor, usingColor, newValue -> usingColor = newValue)
+    private final Option<WalksyLibColor> usingColorOption = ColorOption.createBuilder("Active Color", () -> usingColor, usingColor, newValue -> usingColor = newValue)
         .description(OptionDescription.ofOrderedString(() -> "Color of the shield when in use"))
         .availability(() -> customUsingShieldColor && modEnabled, "Requires 'Custom Using Shield Color & Mod Enabled' to be enabled")
+        .build();
+    private final Option<Boolean> customRisingColorOption = BooleanOption.createBuilder("Custom Rising Shield Color", () -> customRisingShieldColor, customRisingShieldColor, newValue -> customRisingShieldColor = newValue)
+        .description(OptionDescription.ofOrderedString(() -> "Allows customization of the shield color while rising (held but not yet active)"))
+        .availability(() -> modEnabled, "Requires 'Mod Enabled' to be enabled")
+        .build();
+    private final Option<WalksyLibColor> risingColorOption = ColorOption.createBuilder("Rising Color", () -> risingColor, risingColor, newValue -> risingColor = newValue)
+        .description(OptionDescription.ofOrderedString(() -> "Color of the shield while rising (held but not yet active)"))
+        .availability(() -> customRisingShieldColor && modEnabled, "Requires 'Custom Rising Shield Color & Mod Enabled' to be enabled")
         .build();
     private final Option<Boolean> customDisabledColorOption = BooleanOption.createBuilder("Custom Disabled Shield Color", () -> customDisabledShieldColor, customDisabledShieldColor, newValue -> customDisabledShieldColor = newValue)
         .description(OptionDescription.ofOrderedString(() -> "Allows customization of the shield color when disabled"))
@@ -156,6 +176,10 @@ public class Config implements WalksyLibConfig {
         .group(OptionGroup.createBuilder("Using Shield Options")
             .addOption(customUsingColorOption)
             .addOption(usingColorOption)
+            .build())
+        .group(OptionGroup.createBuilder("Rising Shield Options")
+            .addOption(customRisingColorOption)
+            .addOption(risingColorOption)
             .build())
         .group(OptionGroup.createBuilder("Disabled Shield Options")
             .addOption(customDisabledColorOption)
