@@ -2,7 +2,7 @@ package walksy.shieldstatus.config;
 
 import main.walksy.lib.api.WalksyLibConfig;
 import main.walksy.lib.core.WalksyLib;
-import main.walksy.lib.core.config.impl.LocalConfig;
+import main.walksy.lib.core.config.impl.ModConfig;
 import main.walksy.lib.core.config.local.Category;
 import main.walksy.lib.core.config.local.Option;
 import main.walksy.lib.core.config.local.OptionDescription;
@@ -15,7 +15,6 @@ import main.walksy.lib.core.manager.WalksyLibShieldStateManager;
 import main.walksy.lib.core.utils.IdentifierWrapper;
 import main.walksy.lib.core.utils.PathUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -207,8 +206,8 @@ public class Config implements WalksyLibConfig {
         .build();
 
     @Override
-    public LocalConfig define() {
-        return LocalConfig.createBuilder("Shield Status")
+    public ModConfig define() {
+        return ModConfig.createBuilder()
             .path(PathUtils.ofConfigDir("shieldstatus"))
             .category(generalCategory)
             .category(colorCategory)
