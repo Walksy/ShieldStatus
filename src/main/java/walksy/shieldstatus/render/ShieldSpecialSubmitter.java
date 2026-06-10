@@ -15,6 +15,7 @@ import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.level.block.entity.BannerPatternLayers;
@@ -38,23 +39,25 @@ public class ShieldSpecialSubmitter {
     public void submit(final ItemDisplayContext context, final DataComponentMap components, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final int lightCoords, final int overlayCoords, final boolean hasFoil) {
         ShieldStatus.checkDisplayContext(context);
         this.state.extractConfigState();
-        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(this.state.shieldSheet), (pose, _) -> {
-            this.submitShieldModel(pose, components, lightCoords, overlayCoords, hasFoil);
+        final WalksyLibColor color = this.state.tintedColor;
+        final Identifier sheet = this.state.shieldSheet;
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(sheet), (pose, _) -> {
+            this.submitShieldModel(pose, components, lightCoords, overlayCoords, hasFoil, color, sheet);
         });
     }
 
-    private void submitShieldModel(final PoseStack.Pose pose, final DataComponentMap components, final int lightCoords, final int overlayCoords, final boolean hasFoil) {
+    private void submitShieldModel(final PoseStack.Pose pose, final DataComponentMap components, final int lightCoords, final int overlayCoords, final boolean hasFoil, final WalksyLibColor tintedColor, final Identifier shieldSheet) {
         final PoseStack poseStack = new PoseStack();
         poseStack.last().set(pose);
         poseStack.pushPose();
-        final BannerPatternLayers patterns = components != null ? (BannerPatternLayers) components.getOrDefault(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY) : BannerPatternLayers.EMPTY;
-        final DyeColor baseColor = components != null ? (DyeColor) components.get(DataComponents.BASE_COLOR) : null;
+        final BannerPatternLayers patterns = components != null ? components.getOrDefault(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY) : BannerPatternLayers.EMPTY;
+        final DyeColor baseColor = components != null ? components.get(DataComponents.BASE_COLOR) : null;
         final boolean hasPatterns = !patterns.layers().isEmpty() || baseColor != null;
-        final RenderType renderType = RenderTypes.entityTranslucent(this.state.shieldSheet);
+        final RenderType renderType = RenderTypes.entityTranslucent(shieldSheet);
         final MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         final VertexConsumer glintConsumer = ItemFeatureRenderer.getFoilBuffer(bufferSource, renderType, false, hasFoil);
-        this.model.handle().render(poseStack, glintConsumer, lightCoords, overlayCoords, this.state.tintedColor.getRGB());
-        this.model.plate().render(poseStack, glintConsumer, lightCoords, overlayCoords, this.state.tintedColor.getRGB());
+        this.model.handle().render(poseStack, glintConsumer, lightCoords, overlayCoords, tintedColor.getRGB());
+        this.model.plate().render(poseStack, glintConsumer, lightCoords, overlayCoords, tintedColor.getRGB());
         if (hasPatterns) {
             this.submitPatterns(poseStack, bufferSource, lightCoords, overlayCoords, Objects.requireNonNullElse(baseColor, DyeColor.WHITE), patterns);
         }
