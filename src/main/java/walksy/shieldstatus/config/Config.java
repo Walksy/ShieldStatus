@@ -92,7 +92,7 @@ public class Config implements WalksyLibConfig {
 
     public static void tick() {
         final Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.level != null && minecraft.player != null && minecraft.screen == null) {
+        if (minecraft.level != null && minecraft.player != null && minecraft.gui.screen() == null) {
             if (ShieldStatus.toggleSelfState.consumeClick()) {
                 selfStateOnly = !selfStateOnly;
             }
