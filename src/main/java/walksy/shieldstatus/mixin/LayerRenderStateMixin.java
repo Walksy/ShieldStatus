@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import walksy.shieldstatus.ShieldStatus;
-import walksy.shieldstatus.config.Config;
+import walksy.shieldstatus.config.ShieldStatusConfig;
 
 
 @Mixin(targets = "net.minecraft.client.renderer.item.ItemStackRenderState$LayerRenderState")
@@ -25,16 +25,12 @@ public abstract class LayerRenderStateMixin {
     @Shadow private @Nullable Object argumentForSpecialRendering;
     @Shadow private ItemStackRenderState.FoilType foilType;
 
-    /**
-     * Taken out of ShieldSpecialRenderer to acquire the displayContext
-     */
-
     @Inject(method = "submit",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/renderer/special/SpecialModelRenderer;submit(Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V"),
             cancellable = true)
     private void redirectShieldSubmit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, int outlineColor, CallbackInfo ci) {
-        if (!Config.modEnabled) return;
+        if (!ShieldStatusConfig.modEnabled) return;
         if ((Object)this.specialRenderer instanceof ShieldSpecialRenderer) {
             final ItemDisplayContext context = this$0.displayContext;
             final DataComponentMap components = (this.argumentForSpecialRendering instanceof DataComponentMap) ? (DataComponentMap) this.argumentForSpecialRendering : null;

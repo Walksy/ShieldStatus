@@ -1,0 +1,4 @@
+RenderTypes\.entityGlint\(\) => RenderTypes.patternedShieldGlint()
+, color\.getRGB\(\), null, 0, null\); => , color.getRGB(), null, 0);
+, -1, null, 0, null\); => , -1, null, 0);
+, patterns, null\); => , patterns);

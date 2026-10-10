@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "walksy.shieldstatus.mixin",
+	"compatibilityLevel": "JAVA_${java_version}",
+	"client": [
+		"PlayerItemInHandLayerMixin",
+		"ShieldSpecialRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import walksy.shieldstatus.ShieldStatus;
-import walksy.shieldstatus.config.Config;
+import walksy.shieldstatus.config.ShieldStatusConfig;
 
 @Mixin(PlayerItemInHandLayer.class)
 public class PlayerItemInHandLayerMixin {
@@ -25,7 +25,7 @@ public class PlayerItemInHandLayerMixin {
             at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/entity/layers/ItemInHandLayer;submitArmWithItem(Lnet/minecraft/client/renderer/entity/state/ArmedEntityRenderState;Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/HumanoidArm;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V"))
     public <S extends AvatarRenderState> void renderItem(S state, ItemStackRenderState item, ItemStack itemStack, HumanoidArm arm, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, CallbackInfo ci) {
-        if (!Config.modEnabled) return;
+        if (!ShieldStatusConfig.modEnabled) return;
         Level level = Minecraft.getInstance().level;
         Entity entity = level.getEntity(state.id);
         if (entity instanceof Player player) {

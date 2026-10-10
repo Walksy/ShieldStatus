@@ -1,0 +1,4 @@
+import net\.minecraft\.util\.ARGB; => import net.minecraft.util.FastColor;
+\bARGB\. => FastColor.ARGB32.
+\.getPixel\( => .getPixelRGBA(
+\.setPixel\( => .setPixelRGBA(

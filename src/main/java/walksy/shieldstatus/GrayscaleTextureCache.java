@@ -1,6 +1,5 @@
 package walksy.shieldstatus;
 
-
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -8,6 +7,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class GrayscaleTextureCache {
+    private static final Logger LOGGER = LoggerFactory.getLogger("ShieldStatus");
     private static final Map<Identifier, Identifier> cache = new HashMap<>();
 
     public static Identifier get(final Identifier original) {
@@ -32,8 +34,8 @@ public class GrayscaleTextureCache {
                 final NativeImage copy = new NativeImage(nativeTex.getPixels().getWidth(), nativeTex.getPixels().getHeight(), false);
                 copy.copyFrom(nativeTex.getPixels());
                 originalImage = copy;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (final Exception e) {
+                LOGGER.error("Failed to copy texture pixels for grayscale conversion: " + original, e);
             }
         }
         if (originalImage == null) {
@@ -44,8 +46,8 @@ public class GrayscaleTextureCache {
                         originalImage = NativeImage.read(in);
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (final IOException e) {
+                LOGGER.error("Failed to read texture for grayscale conversion: " + original, e);
             }
         }
         if (originalImage == null) {

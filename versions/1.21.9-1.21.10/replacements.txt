@@ -1,0 +1,6 @@
+\bIdentifier\b => ResourceLocation
+import net\.minecraft\.client\.model\.object\.equipment\.ShieldModel; => import net.minecraft.client.model.ShieldModel;
+import net\.minecraft\.client\.renderer\.rendertype\.RenderTypes?; => import net.minecraft.client.renderer.RenderType;
+\bRenderTypes\b => RenderType
+Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack; => Lnet/minecraft/client/renderer/item/ItemStackRenderState;
+ItemStackRenderState item, ItemStack itemStack, => ItemStackRenderState item,

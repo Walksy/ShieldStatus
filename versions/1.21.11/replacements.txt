@@ -1,0 +1,10 @@
+import net\.minecraft\.client\.resources\.model\.sprite\.SpriteGetter; => import net.minecraft.client.resources.model.MaterialSet;
+\bSpriteGetter\b => MaterialSet
+import net\.minecraft\.client\.resources\.model\.sprite\.SpriteId; => import net.minecraft.client.resources.model.Material;
+\bSpriteId\b => Material
+Sheets\.SHIELD_PATTERN_BASE => Sheets.SHIELD_BASE
+Sheets\.getShieldSprite\( => Sheets.getShieldMaterial(
+import net\.minecraft\.client\.renderer\.feature\.ItemFeatureRenderer; => import net.minecraft.client.renderer.entity.ItemRenderer;
+ItemFeatureRenderer\.getFoilBuffer\( => ItemRenderer.getFoilBuffer(
+\(pose, _\) -> => (pose, vertexConsumer) ->
+SHIELD_TEXTURE = Identifier\.withDefaultNamespace\("textures/entity/shield/shield_base_nopattern\.png"\) => SHIELD_TEXTURE = Identifier.withDefaultNamespace("textures/entity/shield_base_nopattern.png")

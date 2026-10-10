@@ -1,7 +1,7 @@
 package walksy.shieldstatus.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
+import main.walksy.lib.api.config.value.WLColor;
 import net.minecraft.client.model.object.equipment.ShieldModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BannerRenderer;
@@ -34,7 +34,7 @@ public class ShieldSpecialSubmitter {
     public void submit(final ItemDisplayContext context, final DataComponentMap components, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final int lightCoords, final int overlayCoords, final boolean hasFoil) {
         ShieldStatus.checkDisplayContext(context);
         this.state.extractConfigState();
-        final WalksyLibColor color = this.state.tintedColor;
+        final WLColor color = this.state.tintedColor;
         final Identifier sheet = this.state.shieldSheet;
         final BannerPatternLayers patterns = components != null ? components.getOrDefault(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY) : BannerPatternLayers.EMPTY;
         final DyeColor baseColor = components != null ? components.get(DataComponents.BASE_COLOR) : null;
@@ -43,8 +43,12 @@ public class ShieldSpecialSubmitter {
         if (hasPatterns) {
             BannerRenderer.submitPatterns(this.sprites, poseStack, submitNodeCollector, lightCoords, overlayCoords, this.model, Unit.INSTANCE, false, Objects.requireNonNullElse(baseColor, DyeColor.WHITE), patterns, null);
         }
+        final int bannerOrder = patterns.layers().size() + 1;
+        if (this.state.banner != null) {
+            submitNodeCollector.order(bannerOrder).submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(this.state.banner), (pose, consumer) -> BannerQuad.emit(pose, consumer, lightCoords, overlayCoords, color.getRGB()));
+        }
         if (hasFoil) {
-            submitNodeCollector.order(patterns.layers().size() + 1).submitModel(this.model, Unit.INSTANCE, poseStack, RenderTypes.entityGlint(), lightCoords, overlayCoords, -1, null, 0, null);
+            submitNodeCollector.order(bannerOrder + 1).submitModel(this.model, Unit.INSTANCE, poseStack, RenderTypes.entityGlint(), lightCoords, overlayCoords, -1, null, 0, null);
         }
     }
 }

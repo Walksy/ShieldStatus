@@ -1,0 +1,3 @@
+accessWidener v1 official
+accessible class net/minecraft/client/gui/render/GuiRenderer$AtlasPosition
+accessible field net/minecraft/client/gui/render/GuiRenderer$AtlasPosition lastAnimatedOnFrame I
